@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}StegoShield AI - Cybersecurity & Steganography Platform{% endblock %}
+
+{% block content %}
+<!-- HERO SECTION WITH BINARY STREAM CANVAS ANIMATION -->
+<div class="hero-container">
+  <canvas id="binaryCanvas"></canvas>
+  <div class="hero-content-layer">
+    {% if session.get('user_id') %}
+      <div class="gov-badge unlocked-badge">🔓 MEMBER ACCOUNT ACTIVE • FULL VAULT UNLOCKED</div>
+    {% else %}
+      <div class="gov-badge">CYBERSECURITY & DATA PRIVACY PLATFORM</div>
+    {% endif %}
+
+    <h1 class="hero-title">Multi-Media <span>Steganography</span> System</h1>
+    <p class="hero-subtitle">
+      An integrated cybersecurity platform for embedding encrypted payloads inside Image, Audio, Video, and Text cover media using AES-256 encryption and Least Significant Bit (LSB) algorithms.
+    </p>
+    <div class="hero-cta">
+      <a href="{{ url_for('encode') }}" class="btn-gov-primary">🔐 Encode Secret Data</a>
+      <a href="{{ url_for('decode') }}" class="btn-gov-secondary">🔓 Decode Stego Media</a>
+    </div>
+  </div>
+</div>
+
+<!-- INTERACTIVE LSB BIT-FLIP ANIMATION VISUALIZER WIDGET -->
+<div class="lsb-widget">
+  <h3 style="color: #ffffff; font-family: var(--font-title); font-size: 1.4rem;">
+    ⚡ Interactive LSB Bit-Flip Visualizer
+  </h3>
+  <p style="color: #94a3b8; font-size: 0.88rem; max-width: 600px; margin: 0.4rem auto 1rem auto;">
+    Real-time visualization of Least Significant Bit (LSB) substitution on pixel color sample byte <code style="color: #38bdf8;">1101001[0]</code>.
+  </p>
+
+  <div class="byte-row">
+    <div class="bit-box">1</div>
+    <div class="bit-box">1</div>
+    <div class="bit-box">0</div>
+    <div class="bit-box">1</div>
+    <div class="bit-box">0</div>
+    <div class="bit-box">0</div>
+    <div class="bit-box">1</div>
+    <div class="bit-box lsb-target" id="lsbBitTarget">0</div>
+  </div>
+
+  <div style="font-size: 0.8rem; color: #cbd5e1;">
+    Status: <strong style="color: #38bdf8;">Modifying LSB channel to insert payload bit</strong>
+  </div>
+</div>
+
+<!-- SUPPORTED MEDIA CARDS -->
+<div style="margin-top: 2.5rem;">
+  <div style="text-align: center; margin-bottom: 2rem;">
+    <h2 style="font-family: var(--font-title); font-size: 2rem; color: #0f172a;">Supported <span>Cover Media</span> Modules</h2>
+    <p style="color: var(--text-muted); max-width: 600px; margin: 0.5rem auto 0 auto;">Choose a specialized steganography engine tailored for specific cover formats.</p>
+  </div>
+
+  <div class="grid-4">
+    <a href="{{ url_for('image_stego') }}" class="media-card">
+      <div class="media-icon">🖼️</div>
+      <h3>Image Steganography</h3>
+      <p>Embed text or image payloads inside PNG and BMP lossless cover images using RGB LSB pixel encoding.</p>
+    </a>
+
+    <a href="{{ url_for('audio_stego') }}" class="media-card">
+      <div class="media-icon">🎵</div>
+      <h3>Audio Steganography</h3>
+      <p>Conceal payload bytes inside WAV PCM audio sample LSBs with real-time waveform preview.</p>
+    </a>
+
+    <a href="{{ url_for('video_stego') }}" class="media-card">
+      <div class="media-icon">🎥</div>
+      <h3>Video Steganography</h3>
+      <p>Process MP4/AVI video container frames to distribute payloads across sequential video streams.</p>
+    </a>
+
+    <a href="{{ url_for('text_stego') }}" class="media-card">
+      <div class="media-icon">📝</div>
+      <h3>Text Steganography</h3>
+      <p>Invisible zero-width unicode character steganography (\u200B, \u200C) within plain text documents.</p>
+    </a>
+  </div>
+</div>
+
+<!-- MEMBER FEATURES VS GUEST CALLOUT -->
+{% if not session.get('user_id') %}
+  <div class="locked-feature-box" style="margin-top: 3.5rem;">
+    <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🔒</div>
+    <h4>Sign Up or Log In to Unlock Member Features</h4>
+    <p style="font-size: 0.9rem; color: var(--text-muted); max-width: 600px; margin: 0.5rem auto 1.5rem auto;">
+      Create a free account to unlock your personal <strong>My Files Vault</strong>, activity logs, re-download links, and high-resolution PSNR difference heatmaps.
+    </p>
+    <div style="display: flex; justify-content: center; gap: 1rem;">
+      <a href="{{ url_for('register') }}" class="btn-gov-primary">Create Free Account</a>
+      <a href="{{ url_for('login') }}" class="btn-gov-secondary">Sign In</a>
+    </div>
+  </div>
+{% endif %}
+
+<!-- SYSTEM WORKFLOW SUMMARY -->
+<div class="card" style="margin-top: 3.5rem; text-align: center;">
+  <h2 style="font-family: var(--font-title); font-size: 1.8rem; color: #0f172a; margin-bottom: 1.5rem;">System Architecture & Workflow</h2>
+  <div class="grid-4" style="text-align: left;">
+    <div class="metric-box">
+      <div style="font-size: 1.3rem; color: var(--accent-blue); font-weight: 800; margin-bottom: 0.5rem;">01. Upload</div>
+      <div style="font-size: 0.85rem; color: var(--text-muted);">Upload cover image, audio, video, or text media container.</div>
+    </div>
+    <div class="metric-box">
+      <div style="font-size: 1.3rem; color: var(--accent-blue); font-weight: 800; margin-bottom: 0.5rem;">02. Encrypt</div>
+      <div style="font-size: 0.85rem; color: var(--text-muted);">AES-256 encrypts payload with passphrase key.</div>
+    </div>
+    <div class="metric-box">
+      <div style="font-size: 1.3rem; color: var(--accent-blue); font-weight: 800; margin-bottom: 0.5rem;">03. LSB Embed</div>
+      <div style="font-size: 0.85rem; color: var(--text-muted);">Inject encrypted payload bits into media LSB sample channels.</div>
+    </div>
+    <div class="metric-box">
+      <div style="font-size: 1.3rem; color: var(--accent-emerald); font-weight: 800; margin-bottom: 0.5rem;">04. Download</div>
+      <div style="font-size: 0.85rem; color: var(--text-muted);">Download visually indistinguishable stego file.</div>
+    </div>
+  </div>
+  <div style="margin-top: 2rem;">
+    <a href="{{ url_for('how_it_works') }}" class="btn-gov-secondary">Explore Detailed Architecture Guide →</a>
+  </div>
+</div>
+{% endblock %}

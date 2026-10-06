@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}StegoShield AI - Cybersecurity & Steganography Platform{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+
+  <!-- MAIN NAVIGATION HEADER -->
+  <header class="gov-header">
+    <div class="nav-container">
+      <a href="{{ url_for('home') }}" class="brand-logo">
+        <div class="shield-emblem">S</div>
+        <div>
+          <div class="brand-title">StegoShield <span>AI</span></div>
+          <div class="brand-subtitle">STEGANOGRAPHY & DATA PRIVACY PLATFORM</div>
+        </div>
+      </a>
+
+      <button type="button" class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav id="primaryNav">
+        <ul class="nav-menu" id="navMenu">
+          <li class="nav-item"><a href="{{ url_for('home') }}" class="nav-link {% if request.endpoint == 'home' %}active{% endif %}">Home</a></li>
+          
+          <li class="nav-item">
+            <a href="{{ url_for('encode') }}" class="nav-link {% if request.endpoint in ['encode', 'image_stego', 'audio_stego', 'video_stego', 'text_stego'] %}active{% endif %}">Encode ▾</a>
+            <div class="dropdown-menu">
+              <a href="{{ url_for('encode') }}" class="dropdown-item">General Encoder</a>
+              <a href="{{ url_for('image_stego') }}" class="dropdown-item">Image Steganography</a>
+              <a href="{{ url_for('audio_stego') }}" class="dropdown-item">Audio Steganography</a>
+              <a href="{{ url_for('video_stego') }}" class="dropdown-item">Video Steganography</a>
+              <a href="{{ url_for('text_stego') }}" class="dropdown-item">Text Steganography</a>
+            </div>
+          </li>
+
+          <li class="nav-item"><a href="{{ url_for('decode') }}" class="nav-link {% if request.endpoint == 'decode' %}active{% endif %}">Decode</a></li>
+
+          <li class="nav-item">
+            <a href="{{ url_for('capacity_checker') }}" class="nav-link {% if request.endpoint in ['capacity_checker', 'quality_analysis'] %}active{% endif %}">Tools ▾</a>
+            <div class="dropdown-menu">
+              <a href="{{ url_for('capacity_checker') }}" class="dropdown-item">Capacity Checker</a>
+              <a href="{{ url_for('quality_analysis') }}" class="dropdown-item">Quality Analysis (PSNR/SSIM)</a>
+            </div>
+          </li>
+
+          <li class="nav-item">
+            <a href="{{ url_for('how_it_works') }}" class="nav-link {% if request.endpoint in ['how_it_works', 'learn'] %}active{% endif %}">Learn ▾</a>
+            <div class="dropdown-menu">
+              <a href="{{ url_for('how_it_works') }}" class="dropdown-item">How It Works</a>
+              <a href="{{ url_for('learn') }}" class="dropdown-item">Learn Steganography</a>
+            </div>
+          </li>
+
+          <li class="nav-item"><a href="{{ url_for('about') }}" class="nav-link {% if request.endpoint == 'about' %}active{% endif %}">About</a></li>
+
+          {% if session.get('user_id') %}
+            <li class="nav-item"><a href="{{ url_for('dashboard') }}" class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">My Files</a></li>
+            <li class="nav-item"><a href="{{ url_for('logout') }}" class="nav-btn nav-btn-logout">Logout</a></li>
+          {% else %}
+            <li class="nav-item"><a href="{{ url_for('login') }}" class="nav-btn">Portal Login</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- FLASH MESSAGES -->
+  <div class="flash-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">
+            <span>{% if category == 'success' %}✅{% else %}⚠️{% endif %}</span>
+            <span>{{ message }}</span>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <div class="main-wrapper">
+    {% block content %}{% endblock %}
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="gov-footer">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <h4>StegoShield AI Platform</h4>
+        <p style="font-size: 0.85rem; line-height: 1.5;">Advanced Multi-Media Steganography & Quality Analysis System for Secure Information Hiding.</p>
+      </div>
+      <div class="footer-links">
+        <h5>Encoder Modules</h5>
+        <ul>
+          <li><a href="{{ url_for('image_stego') }}">Image Steganography</a></li>
+          <li><a href="{{ url_for('audio_stego') }}">Audio Steganography</a></li>
+          <li><a href="{{ url_for('video_stego') }}">Video Steganography</a></li>
+          <li><a href="{{ url_for('text_stego') }}">Text Steganography</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h5>Analysis & Tools</h5>
+        <ul>
+          <li><a href="{{ url_for('capacity_checker') }}">Capacity Calculator</a></li>
+          <li><a href="{{ url_for('quality_analysis') }}">PSNR & MSE Quality Meter</a></li>
+          <li><a href="{{ url_for('how_it_works') }}">Workflow Architecture</a></li>
+          <li><a href="{{ url_for('learn') }}">Steganography Knowledge Base</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h5>Platform Info</h5>
+        <ul>
+          <li><a href="{{ url_for('about') }}">About Project</a></li>
+          <li><a href="{{ url_for('dashboard') }}">User Activity Logs</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>© 2026 StegoShield AI • Cybersecurity & Steganography Platform. All Rights Reserved.</div>
+      <div style="color: #94a3b8;">Release v3.0</div>
+    </div>
+  </footer>
+
+  <div id="jobOverlay" class="job-overlay" hidden>
+    <div class="job-overlay-card">
+      <div class="job-spinner" aria-hidden="true"></div>
+      <p id="jobOverlayText">Working…</p>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+</html>

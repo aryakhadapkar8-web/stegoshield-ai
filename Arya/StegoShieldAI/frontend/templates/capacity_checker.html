@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Capacity Checker - StegoShield AI Platform{% endblock %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 0 auto;">
+  <div class="card card-blue">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
+      <div>
+        <h2 style="font-family: var(--font-title); color: #0f172a;">📊 Media Capacity Calculator</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Analyze cover file dimensions, sample rates, and calculate maximum hidden embedding capacity.</p>
+      </div>
+      <span class="gov-badge" style="background: #eff6ff; border-color: #93c5fd; color: #1e40af;">Capacity Utility</span>
+    </div>
+
+    <form action="{{ url_for('capacity_checker') }}" method="POST" enctype="multipart/form-data" id="capacityForm">
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">Cover File (Image, Audio, Video, or Text)</label>
+          <div class="file-upload-box">
+            <div class="file-upload-icon">📁</div>
+            <div class="upload-text">Select cover file to analyze</div>
+            <input type="file" name="cover_file" required style="opacity: 0; position: absolute; inset: 0; cursor: pointer;">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Secret Payload Size (Bytes, Optional)</label>
+          <input type="number" name="secret_size" class="form-control" placeholder="Enter target secret payload size in bytes (e.g. 500000)..." value="0">
+          <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 6px;">Leave 0 to check maximum available capacity.</div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-gov-primary" style="width: 100%; justify-content: center; margin-top: 1rem;">
+        📊 Analyze Cover Capacity
+      </button>
+    </form>
+
+    <div id="capacityApiResult"></div>
+
+    {% if result %}
+      <div class="card card-blue" style="margin-top: 2rem; background: #f8fafc;">
+        <h3 style="color: #0f172a; margin-bottom: 1.5rem;">📁 File Capacity Analysis Summary</h3>
+        
+        <table class="gov-table">
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Value / Metric</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>File Name</strong></td>
+              <td>{{ result.filename }}</td>
+            </tr>
+            <tr>
+              <td><strong>Media Type</strong></td>
+              <td><span class="gov-badge" style="padding: 2px 10px;">{{ result.media_type }}</span></td>
+            </tr>
+            <tr>
+              <td><strong>Cover File Size</strong></td>
+              <td>{{ result.file_size_formatted }} ({{ result.file_size_bytes }} Bytes)</td>
+            </tr>
+            <tr>
+              <td><strong>Max Available Capacity</strong></td>
+              <td style="color: var(--accent-emerald); font-weight: 700;">{{ result.max_payload_formatted }} ({{ result.max_payload_bytes }} Bytes)</td>
+            </tr>
+            {% if result.secret_size_bytes > 0 %}
+              <tr>
+                <td><strong>Secret Payload Size</strong></td>
+                <td>{{ result.secret_size_formatted }} ({{ result.secret_size_bytes }} Bytes)</td>
+              </tr>
+              <tr>
+                <td><strong>Capacity Usage</strong></td>
+                <td>{{ result.usage_percent }}% of total capacity</td>
+              </tr>
+            {% endif %}
+            <tr>
+              <td><strong>Validation Status</strong></td>
+              <td style="color: {% if result.is_supported %}#059669{% else %}#dc2626{% endif %}; font-weight: 700;">
+                {{ result.status }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

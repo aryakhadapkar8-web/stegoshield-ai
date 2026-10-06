@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Audio Steganography - StegoShield AI Platform{% endblock %}
+
+{% block content %}
+<div class="card card-blue">
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
+    <div>
+      <h2 style="font-family: var(--font-title); color: #0f172a;">🎵 Audio LSB Steganography Studio</h2>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">Conceal encrypted binary payloads into WAV PCM sample bitstreams.</p>
+    </div>
+    <span class="gov-badge" style="background: #f0fdf4; border-color: #86efac; color: #166534;">WAV Audio Cover</span>
+  </div>
+
+  <div class="grid-2">
+    <div>
+      <form action="{{ url_for('audio_stego') }}" method="POST" enctype="multipart/form-data" class="js-job-form" data-busy-message="Encrypting and embedding into audio…">
+        <div class="form-group">
+          <label class="form-label">Upload Cover Audio (WAV Format)</label>
+          <div class="file-upload-box">
+            <div class="file-upload-icon">🎧</div>
+            <div class="upload-text">Select .wav audio file</div>
+            <input type="file" name="audio" accept="audio/wav,.wav" required style="opacity: 0; position: absolute; inset: 0; cursor: pointer;">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Secret Message Payload</label>
+          <textarea name="secret_message" class="form-control" placeholder="Enter confidential message..." required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Passphrase Key</label>
+          <input type="password" name="passphrase" class="form-control" placeholder="Enter security passphrase..." required>
+        </div>
+
+        <button type="submit" class="btn-gov-primary" style="width: 100%; justify-content: center;">
+          🎵 Encode Audio Stego
+        </button>
+      </form>
+    </div>
+
+    <div>
+      {% if output_file %}
+        <div class="card card-blue" style="height: 100%; background: #f8fafc;">
+          <h3 style="color: #0f172a; margin-bottom: 1rem;">🔊 Stego Audio Player & Preview</h3>
+          <div style="margin: 2rem 0; text-align: center;">
+            <audio controls style="width: 100%;">
+              <source src="{{ url_for('get_output_file', filename=output_file) }}" type="audio/wav">
+              Your browser does not support audio playback.
+            </audio>
+          </div>
+
+          {% if audio_info %}
+            <div class="metric-box" style="margin-bottom: 1.5rem;">
+              <div style="font-size: 0.85rem; color: var(--text-muted);">
+                Duration: <strong>{{ audio_info.duration_seconds }}s</strong> | 
+                Sample Rate: <strong>{{ audio_info.frame_rate }} Hz</strong> | 
+                Channels: <strong>{{ audio_info.channels }}</strong>
+              </div>
+            </div>
+          {% endif %}
+
+          <div style="text-align: center;">
+            <a href="{{ url_for('get_output_file', filename=output_file) }}" download class="btn-gov-primary">
+              ⬇️ Download Stego Audio (.WAV)
+            </a>
+          </div>
+        </div>
+      {% else %}
+        <div class="metric-box" style="height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 3rem;">
+          <div style="font-size: 3rem; margin-bottom: 1rem; color: var(--text-muted);">📻</div>
+          <h4 style="color: var(--text-primary);">Audio Waveform Preview</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted); max-width: 300px; margin-top: 0.5rem;">
+            Upload WAV cover file to generate stego audio and listen to playback.
+          </p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

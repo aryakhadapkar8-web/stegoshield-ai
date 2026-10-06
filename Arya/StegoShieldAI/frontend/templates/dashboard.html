@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}My Files & Encrypted Vault - StegoShield AI Platform{% endblock %}
+
+{% block content %}
+<div class="card card-blue dashboard-card">
+  <div class="dashboard-header">
+    <div>
+      <span class="gov-badge unlocked-badge">AUTHENTICATED MEMBER WORKSPACE</span>
+      <h1 class="dashboard-title">My Files &amp; Secret Vault</h1>
+      <p class="dashboard-meta">
+        Account Member: <strong>{{ user.username }}</strong> ({{ user.email }})
+      </p>
+    </div>
+    <a href="{{ url_for('encode') }}" class="btn-gov-primary">New Encode Task</a>
+  </div>
+
+  <div class="grid-4 stats-row">
+    <div class="metric-box">
+      <div class="metric-value">{{ stats.total_encodes }}</div>
+      <div class="metric-label">Total Encodes</div>
+    </div>
+    <div class="metric-box">
+      <div class="metric-value" style="color: var(--accent-cyan);">{{ stats.total_decodes }}</div>
+      <div class="metric-label">Total Decodes</div>
+    </div>
+    <div class="metric-box">
+      <div class="metric-value" style="color: var(--accent-emerald);">{{ stats.total_bytes_hidden }}</div>
+      <div class="metric-label">Total Bytes Hidden</div>
+    </div>
+    <div class="metric-box">
+      <div class="metric-value" style="color: var(--accent-gold);">{{ stats.total_vault_items }}</div>
+      <div class="metric-label">Encrypted Keys in Vault</div>
+    </div>
+  </div>
+
+  <div class="grid-2 vault-grid">
+    <div class="card card-blue inner-panel">
+      <h3 class="panel-heading">Save Secret Key to Encrypted Vault</h3>
+      <form action="{{ url_for('add_vault') }}" method="POST">
+        <div class="form-group">
+          <label class="form-label">Item Title / Project Label</label>
+          <input type="text" name="title" class="form-control" placeholder="e.g. Image Stego Passphrase 2026..." required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Secret Encryption Key</label>
+          <input type="password" name="secret_key" class="form-control" placeholder="Enter secret passphrase to save..." required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Notes / Description (Optional)</label>
+          <input type="text" name="note" class="form-control" placeholder="Optional notes...">
+        </div>
+
+        <button type="submit" class="btn-gov-primary" style="width: 100%; justify-content: center;">
+          Save Key to Vault
+        </button>
+      </form>
+    </div>
+
+    <div class="card card-blue inner-panel inner-panel-white">
+      <h3 class="panel-heading">Saved Vault Keys</h3>
+      {% if vault and vault|length > 0 %}
+        <div class="vault-list">
+          {% for item in vault %}
+            <div class="metric-box vault-item">
+              <div class="vault-item-title">{{ item.title }}</div>
+              <div class="vault-item-note">{{ item.note or 'No notes' }}</div>
+              <div class="vault-key-row">
+                <code class="vault-secret-display">••••••••</code>
+                <input type="hidden" class="vault-secret-value" value="{{ item.secret_key }}">
+                <button type="button" class="text-action vault-reveal">Reveal</button>
+                <button type="button" class="text-action vault-copy">Copy</button>
+              </div>
+              <form action="{{ url_for('delete_vault', vault_id=item.id) }}" method="POST" class="vault-delete">
+                <button type="submit" class="icon-btn danger" title="Delete Vault Item">Delete</button>
+              </form>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="metric-box empty-panel">
+          <p class="muted-copy">No keys saved in your vault yet. Stored keys are encrypted at rest.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="history-toolbar">
+    <h3 class="panel-heading history-heading">Activity Logs &amp; Download History</h3>
+    <form method="GET" action="{{ url_for('dashboard') }}" class="history-filter">
+      <input type="search" name="q" class="form-control history-search" value="{{ search_query or '' }}" placeholder="Search filename or output…">
+      <select name="action" class="form-control history-select">
+        <option value="" {% if not action_filter %}selected{% endif %}>All actions</option>
+        <option value="Encode" {% if action_filter == 'Encode' %}selected{% endif %}>Encode</option>
+        <option value="Decode" {% if action_filter == 'Decode' %}selected{% endif %}>Decode</option>
+      </select>
+      <button type="submit" class="btn-gov-secondary history-apply">Filter</button>
+    </form>
+  </div>
+
+  {% if history and history|length > 0 %}
+    <div class="table-responsive">
+      <table class="gov-table">
+        <thead>
+          <tr>
+            <th>Action</th>
+            <th>Input File</th>
+            <th>Output / Stego File</th>
+            <th>Payload Size</th>
+            <th>Risk Score</th>
+            <th>Timestamp</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for log in history %}
+            <tr>
+              <td>
+                <span class="gov-badge action-badge {% if log.action_type.startswith('Encode') %}encode{% else %}decode{% endif %}">
+                  {{ log.action_type }}
+                </span>
+              </td>
+              <td><strong>{{ log.filename }}</strong></td>
+              <td>
+                {{ log.output_filename or 'N/A' }}
+                {% if log.output_filename and not log.file_available %}
+                  <div class="file-missing">File no longer on disk</div>
+                {% endif %}
+              </td>
+              <td>{{ log.payload_size }} Bytes</td>
+              <td>
+                {% if log.stego_score and log.stego_score > 0 %}
+                  <span class="score-cell">{{ log.stego_score }}%</span>
+                {% else %}
+                  <span class="muted-copy">N/A</span>
+                {% endif %}
+              </td>
+              <td class="timestamp-cell">{{ log.timestamp }}</td>
+              <td>
+                <div class="row-actions">
+                  {% if log.output_filename and log.file_available %}
+                    <a href="{{ url_for('get_output_file', filename=log.output_filename) }}" download class="text-action">Download</a>
+                  {% elif log.output_filename %}
+                    <span class="muted-copy">Unavailable</span>
+                  {% endif %}
+                  <form action="{{ url_for('delete_history', history_id=log.id) }}" method="POST">
+                    <button type="submit" class="icon-btn danger" title="Delete Log">Delete</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="metric-box empty-panel">
+      <p class="muted-copy">No matching activity logs. Encode or decode a file, or clear the search filter.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
