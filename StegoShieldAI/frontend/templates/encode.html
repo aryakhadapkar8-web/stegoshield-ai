@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Encode Data - StegoShield AI Platform{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+  <div class="card card-blue">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
+      <h2 style="font-family: var(--font-title); color: #0f172a;">🔐 Media Encoder Studio</h2>
+      <span class="gov-badge" style="background: #eff6ff; border-color: #93c5fd; color: #1e40af;">AES-256 Encryption</span>
+    </div>
+    
+    <p style="color: var(--text-muted); margin-bottom: 2rem; font-size: 0.95rem;">
+      Upload cover media (Image, Audio, or Video), enter secret payload, and provide an encryption key. The system will encrypt the payload using AES-256 and embed it inside the media's least significant bits.
+    </p>
+
+    <form action="{{ url_for('encode') }}" method="POST" enctype="multipart/form-data" class="js-job-form" data-busy-message="Encrypting and embedding payload…">
+      
+      <div class="form-group">
+        <label class="form-label">1. Select Cover File (PNG, JPG, BMP, WAV, MP4)</label>
+        <div class="file-upload-box">
+          <div class="file-upload-icon">📁</div>
+          <div class="upload-text">Click or drag cover file here to upload</div>
+          <input type="file" name="cover_file" required style="opacity: 0; position: absolute; inset: 0; cursor: pointer;">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">2. Confidential Secret Message / Data</label>
+        <textarea name="secret_message" class="form-control" placeholder="Enter confidential payload text..." required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">3. Encryption Key / Passphrase</label>
+        <input type="password" name="passphrase" class="form-control" placeholder="Enter security passphrase key..." required>
+      </div>
+
+      <div style="margin-top: 2rem;">
+        <button type="submit" class="btn-gov-primary" style="width: 100%; justify-content: center;">
+          🔐 Encrypt & Embed Payload
+        </button>
+      </div>
+    </form>
+
+    {% if output_file %}
+      <div style="margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid var(--border-subtle); text-align: center;">
+        <h3 style="color: var(--accent-emerald); margin-bottom: 0.5rem;">✅ Stego Media Generated Successfully!</h3>
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Your encrypted payload has been embedded into the stego file without visual or audio distortion.</p>
+        <a href="{{ url_for('get_output_file', filename=output_file) }}" download class="btn-gov-primary">
+          ⬇️ Download Stego File ({{ output_file }})
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

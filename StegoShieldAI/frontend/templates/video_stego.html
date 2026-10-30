@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Video Steganography - StegoShield AI Platform{% endblock %}
+
+{% block content %}
+<div class="card card-blue">
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
+    <div>
+      <h2 style="font-family: var(--font-title); color: #0f172a;">🎥 Video Frame LSB Steganography Studio</h2>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">Sequential frame processing and bitstream embedding inside MP4 / AVI video containers.</p>
+    </div>
+    <span class="gov-badge" style="background: #eff6ff; border-color: #93c5fd; color: #1e40af;">MP4 Container</span>
+  </div>
+
+  <div class="grid-2">
+    <div>
+      <form action="{{ url_for('video_stego') }}" method="POST" enctype="multipart/form-data" class="js-job-form" data-busy-message="Encrypting and embedding into video…">
+        <div class="form-group">
+          <label class="form-label">Upload Cover Video (MP4 / AVI)</label>
+          <div class="file-upload-box">
+            <div class="file-upload-icon">🎬</div>
+            <div class="upload-text">Select .mp4 or .avi video file</div>
+            <input type="file" name="video" accept="video/mp4,video/avi" required style="opacity: 0; position: absolute; inset: 0; cursor: pointer;">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Secret Data Payload</label>
+          <textarea name="secret_message" class="form-control" placeholder="Enter secret data payload..." required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">AES Passphrase Key</label>
+          <input type="password" name="passphrase" class="form-control" placeholder="Enter passphrase key..." required>
+        </div>
+
+        <button type="submit" class="btn-gov-primary" style="width: 100%; justify-content: center;">
+          ⚡ Process Frames & Embed Payload
+        </button>
+      </form>
+    </div>
+
+    <div>
+      {% if output_file %}
+        <div class="card card-blue" style="height: 100%; background: #f8fafc;">
+          <h3 style="color: #0f172a; margin-bottom: 1rem;">📹 Stego Video File Ready</h3>
+          <div style="margin: 2rem 0; text-align: center;">
+            <video controls style="max-width: 100%; border-radius: var(--radius-md); border: 1px solid var(--border-strong);">
+              <source src="{{ url_for('get_output_file', filename=output_file) }}" type="video/mp4">
+              Your browser does not support video preview.
+            </video>
+          </div>
+
+          <div style="text-align: center;">
+            <a href="{{ url_for('get_output_file', filename=output_file) }}" download class="btn-gov-primary">
+              ⬇️ Download Stego Video (.MP4)
+            </a>
+          </div>
+        </div>
+      {% else %}
+        <div class="metric-box" style="height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 3rem;">
+          <div style="font-size: 3rem; margin-bottom: 1rem; color: var(--text-muted);">🎥</div>
+          <h4 style="color: var(--text-primary);">Video Processing Terminal</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted); max-width: 300px; margin-top: 0.5rem;">
+            Upload MP4 video file to execute frame-by-frame LSB embedding.
+          </p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

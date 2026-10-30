@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run StegoShield AI",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/StegoShieldAI/backend/app.py",
+      "cwd": "${workspaceFolder}/StegoShieldAI/backend",
+      "console": "integratedTerminal"
+    }
+  ]
+}
