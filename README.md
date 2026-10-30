@@ -5,8 +5,6 @@
 [![Python Version](https://img.shields.io/badge/Python-3.10%2B-blue.svg?logo=python)](https://python.org)
 [![Framework](https://img.shields.io/badge/Framework-Flask%203.0-000000.svg?logo=flask)](https://flask.palletsprojects.com/)
 [![Cryptography](https://img.shields.io/badge/Security-AES--256--CBC%20%7C%20PBKDF2-red.svg?logo=shield)](https://cryptography.io)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)]()
 
 ---
 
@@ -275,9 +273,4 @@ python backend/test_suite.py
 *   **Lossless Formats**: Always use lossless containers (**PNG, BMP, WAV**) for LSB steganography to avoid data loss caused by lossy compression algorithms (such as JPEG quantization or MP3 sub-band filtering).
 *   **Strong Passphrases**: Payload confidentiality relies on AES-256-CBC with PBKDF2. Always supply high-entropy passphrases.
 *   **Isolated Storage**: Uploaded files and temporary outputs are protected via session tokens and user ownership checks to prevent unauthorized artifact retrieval.
-
 ---
-
-## 📄 License
-
-This project is open-source and distributed under the **MIT License**. See [LICENSE](LICENSE) for details.
